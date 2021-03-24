@@ -1,8 +1,21 @@
 import pygame
 
-class Virus(pygame.sprite.Sprite):
+pygame.init()
+
+# Iniciando o display
+width = 200
+height = 100
+Speed = 5
+screen = pygame.display.set_mode((720 ,480))
+pygame.display.set_caption('Game do virus')
+Clock = pygame.time.Clock()
+
+Cor = (255,255,170)
+
+class Virus (pygame.sprite.Sprite):
     def __init__(self):
-        super(Virus, self).__init__()
+        pygame.sprite.Sprite.__init__(self)
+
         self.sprite = []
         self.sprite.append(pygame.image.load('Virus1.png'))
         self.sprite.append(pygame.image.load('Virus2.png'))
@@ -15,40 +28,38 @@ class Virus(pygame.sprite.Sprite):
 
         self.retorne = 0
         self.image = self.sprite[self.retorne]
-        self.rect = pygame.Rect(5,5,150,198)
+
+        self.image = pygame.transform.scale(self.image, (100 * 2 ,100 * 2))
+
+        self.rect = self.image.get_rect()
+        self.rect.topleft = width, height
 
 
-        self.retorne += 1
+
+    def update(self):
+        self.retorne = self.retorne + 0.25
         if self.retorne >= len(self.sprite):
             self.retorne = 0
-        self.sprite = self.sprite[self.retorne]
+        self.image = self.sprite[int(self.retorne)]
+        self.image = pygame.transform.scale(self.image, (100 * 2, 100 * 2))
 
-pygame.init()
-my_sprite = Virus()
-my_group = pygame.sprite.Group(my_sprite)
-clock = pygame.time.Clock()
 
-# Iniciando o display
+all_sprite = pygame.sprite.Group()
+virus_sprite = Virus()
+all_sprite.add(virus_sprite)
 
-width = 1280
-height = 720
-pixelwalk = 5
-screen = pygame.display.set_mode((width, height))
-screen.fill((25,255,255))
-
-#Criando o loop
-
-Running = True
-clock = pygame.time.Clock()
-while Running:
+# Criando Loop
+while True:
+    Clock.tick(60)
+    screen.fill(Cor)
     for event in pygame.event.get():
-        clock.tick(10)
         if event.type == pygame.QUIT:
-            Running = quit()
+            pygame.quit()
+            exit()
+    button = pygame.key.get_pressed()
+    if width >= Speed:
+        width += Speed
 
-my_group.draw(screen, (width,height))
-pygame.display.flip()
-clock.tick(10)
-
-
-pygame.quit()
+    all_sprite.draw(screen)
+    all_sprite.update()
+    pygame.display.flip()
